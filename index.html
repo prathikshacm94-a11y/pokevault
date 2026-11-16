@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poke Vault - Pokemon TCG Product Values</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+    --text:#eef0f4; --muted:#9aa1ad; --accent:#ffcb05; --accent2:#3d7dca;
+    --up:#3ecf8e; --down:#ff6b6b; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:10;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar{max-width:1400px;margin:0 auto;padding:14px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .logo{font:700 22px "Space Grotesk",sans-serif;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .ball{width:26px;height:26px;border-radius:50%;background:linear-gradient(var(--down) 0 46%,#111 46% 54%,#fff 54%);position:relative;border:2px solid #111}
+  .ball:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff;border:2px solid #111}
+  .tabs{display:flex;gap:4px;background:var(--panel);padding:4px;border-radius:10px}
+  .tabs button{background:none;border:0;color:var(--muted);padding:7px 14px;border-radius:7px;font:600 13px Inter;cursor:pointer}
+  .tabs button.on{background:var(--panel2);color:var(--text)}
+  .search{flex:1;min-width:200px}
+  input,select{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px 12px;font:14px Inter;outline:none}
+  input:focus,select:focus{border-color:var(--accent2)}
+  .search input{width:100%}
+  .updated{color:var(--muted);font-size:12px}
+  main{max-width:1400px;margin:0 auto;padding:20px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:6px 11px;border-radius:999px;font-size:12.5px;cursor:pointer;user-select:none}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#111;font-weight:600}
+  .count{color:var(--muted);font-size:13px;margin-left:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,border-color .12s}
+  .card:hover{transform:translateY(-2px);border-color:#3a404d}
+  .img{aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .img img{width:100%;height:100%;object-fit:contain}
+  .img.cardimg{aspect-ratio:5/7;background:var(--panel2)}
+  .noimg{color:#888;font-size:12px}
+  .body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .name{font-weight:600;font-size:13.5px;line-height:1.3}
+  .meta{color:var(--muted);font-size:12px}
+  .setlink{color:var(--accent2);cursor:pointer;text-decoration:none}
+  .setlink:hover{text-decoration:underline}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11px;color:var(--muted)}
+  .prices{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+  .pl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .pv{font:700 16px "Space Grotesk",sans-serif}
+  .pv.big{color:var(--accent)}
+  .msrp{display:flex;align-items:center;gap:4px}
+  .msrp input{width:74px;padding:3px 6px;font:600 14px "Space Grotesk";background:transparent;border:1px dashed transparent;border-radius:6px}
+  .msrp input:hover,.msrp input:focus{border-color:var(--line);background:var(--panel2)}
+  .est{font-size:10px;color:var(--muted)}
+  .gain{font-size:12px;font-weight:600}
+  .gain.up{color:var(--up)} .gain.down{color:var(--down)}
+  .more{display:block;margin:22px auto;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:10px 22px;border-radius:10px;cursor:pointer;font:600 13px Inter}
+  .sethead{display:flex;gap:20px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+  .sethead h1{font:700 28px "Space Grotesk";margin:0}
+  .back{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:9px;cursor:pointer;font:600 13px Inter}
+  .stats{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+  h2{font:700 18px "Space Grotesk";margin:28px 0 12px}
+  .empty{background:var(--panel);border:1px dashed var(--line);border-radius:var(--radius);padding:40px;text-align:center;color:var(--muted)}
+  .setcard .img{aspect-ratio:16/10}
+  .rank{position:absolute;top:8px;left:8px;background:var(--accent);color:#111;font:700 12px "Space Grotesk";padding:2px 8px;border-radius:6px}
+  .rel{position:relative}
+  .setup{max-width:640px;margin:60px auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .setup h1{font:700 24px "Space Grotesk";margin-top:0}
+  .setup li{margin:8px 0}
+  code{background:var(--panel2);padding:2px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo" onclick="go('')"><span class="ball"></span>Poke Vault</div>
+    <div class="tabs">
+      <button id="tab-products" onclick="go('')">Products</button>
+      <button id="tab-sets" onclick="go('sets')">Sets</button>
+    </div>
+    <div class="search"><input id="q" placeholder="Search products, sets or cards..." autocomplete="off"></div>
+    <div class="updated" id="updated"></div>
+  </div>
+</header>
+<main id="app"></main>
+
+<script src="data.js"></script>
+<script>
+const D = window.POKE_DATA;
+const app = document.getElementById('app');
+const TYPES = ["Booster Pack","Blister","Booster Bundle","Elite Trainer Box","Booster Box","Collection / Box","Tin","Build & Battle","Deck","Case","Other"];
+const state = { q:"", types:new Set(), year:"", sort:"new", shown:96, setSort:"new", rarity:"" };
+
+if (!D) {
+  app.innerHTML = `<div class="setup"><h1>No price data yet</h1>
+  <p>This page needs the price file before it can show anything. To create it:</p>
+  <ol><li>Double-click <code>Update Prices.bat</code> in this folder.</li>
+  <li>Wait for it to say <b>Done!</b> (a few minutes).</li>
+  <li>Come back here and refresh this page.</li></ol></div>`;
+  throw new Error("no data");
+}
+
+document.getElementById('updated').textContent = "Prices updated " + D.updated;
+const setById = new Map(D.sets.map(s => [s.id, s]));
+const sealedBySet = new Map(), hitsBySet = new Map();
+for (const p of D.sealed) { if (!sealedBySet.has(p.g)) sealedBySet.set(p.g, []); sealedBySet.get(p.g).push(p); }
+for (const c of D.hits) { if (!hitsBySet.has(c.g)) hitsBySet.set(c.g, []); hitsBySet.get(c.g).push(c); }
+const years = [...new Set(D.sets.map(s => s.d.slice(0,4)).filter(Boolean))].sort().reverse();
+
+// ---------- helpers ----------
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = v => v == null ? "n/a" : "$" + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem("pv_msrp") || "{}"); } catch(e){ return {}; } },
+  set(o){ try { localStorage.setItem("pv_msrp", JSON.stringify(o)); } catch(e){} }
+};
+let userMsrp = store.get();
+
+function estMsrp(p){
+  const s = setById.get(p.g); const d = s ? s.d : "";
+  const pc = /pokemon center/i.test(p.n) ? 10 : 0;
+  if (d >= "2023-03-01") {
+    return {"Booster Pack":4.49,"Elite Trainer Box":49.99+pc,"Booster Bundle":26.94,"Booster Box":161.64}[p.t] ?? null;
+  }
+  if (d >= "2020-02-01") {
+    return {"Booster Pack":3.99,"Elite Trainer Box":49.99+pc,"Booster Bundle":23.94,"Booster Box":143.64}[p.t] ?? null;
+  }
+  return null;
+}
+function msrpOf(p){
+  if (userMsrp[p.id] != null) return {v:userMsrp[p.id], est:false};
+  const e = estMsrp(p); return {v:e, est:e != null};
+}
+function gainHtml(p){
+  const m = msrpOf(p).v;
+  if (!m || p.mp == null) return "";
+  const g = (p.mp - m) / m * 100;
+  return `<span class="gain ${g>=0?'up':'down'}">${g>=0?'+':''}${g.toFixed(0)}% vs MSRP</span>`;
+}
+function img(src, cls=""){
+  return `<div class="img ${cls}">${src ? `<img loading="lazy" src="${esc(src.replace('_200w','_400w'))}" onerror="this.onerror=null;this.src='${esc(src)}';this.onerror=function(){this.parentNode.innerHTML='<span class=noimg>No image</span>'}">` : '<span class="noimg">No image</span>'}</div>`;
+}
+function matchQ(text){ return !state.q || text.toLowerCase().includes(state.q); }
+
+// ---------- product card ----------
+function productCard(p, showSet=true){
+  const s = setById.get(p.g); const m = msrpOf(p);
+  return `<div class="card">
+    <a href="${esc(p.url)}" target="_blank" rel="noopener">${img(p.img)}</a>
+    <div class="body">
+      <div class="name">${esc(p.n)}</div>
+      ${showSet && s ? `<div class="meta"><a class="setlink" onclick="go('set-${s.id}')">${esc(s.n)}</a> · ${esc(s.d.slice(0,4))}</div>` : ""}
+      <div><span class="tag">${esc(p.t)}</span></div>
+      <div class="prices">
+        <div><div class="pl">MSRP ${m.est?'<span class="est">(est.)</span>':''}</div>
+          <div class="msrp">$<input value="${m.v!=null?m.v:''}" placeholder="add" data-id="${p.id}" onchange="saveMsrp(this)" title="Click to edit MSRP"></div></div>
+        <div><div class="pl">Market (TCGplayer)</div><div class="pv big">${money(p.mp)}</div></div>
+        <div><div class="pl">Lowest listing</div><div class="pv" style="font-size:14px">${money(p.lp)}</div></div>
+        <div style="align-self:end">${gainHtml(p)}</div>
+      </div>
+    </div></div>`;
+}
+function saveMsrp(el){
+  const v = parseFloat(el.value.replace(/[^0-9.]/g,""));
+  if (isNaN(v)) delete userMsrp[el.dataset.id]; else userMsrp[el.dataset.id] = v;
+  store.set(userMsrp); render();
+}
+
+// ---------- hit card ----------
+function hitCard(c, i){
+  return `<div class="card rel">
+    ${i < 3 ? `<span class="rank">#${i+1}</span>` : ""}
+    <a href="${esc(c.url)}" target="_blank" rel="noopener">${img(c.img, "cardimg")}</a>
+    <div class="body">
+      <div class="name">${esc(c.n)}</div>
+      <div class="meta">${esc(c.num)}${c.num?' · ':''}${esc(c.r)}${c.sub && c.sub!=='Normal' ? ' · '+esc(c.sub) : ''}</div>
+      <div class="prices">
+        <div><div class="pl">Market</div><div class="pv big">${money(c.mp)}</div></div>
+        <div><div class="pl">Lowest</div><div class="pv" style="font-size:14px">${money(c.lp)}</div></div>
+      </div>
+    </div></div>`;
+}
+
+// ---------- views ----------
+function sortProducts(list, how){
+  const d = p => (setById.get(p.g)||{}).d || "";
+  const by = {
+    new:(a,b)=> d(b).localeCompare(d(a)) || TYPES.indexOf(a.t)-TYPES.indexOf(b.t),
+    old:(a,b)=> d(a).localeCompare(d(b)),
+    high:(a,b)=> (b.mp??-1)-(a.mp??-1),
+    low:(a,b)=> (a.mp??1e9)-(b.mp??1e9),
+    gain:(a,b)=> { const g=p=>{const m=msrpOf(p).v; return m&&p.mp!=null?(p.mp-m)/m:-1e9}; return g(b)-g(a); },
+    name:(a,b)=> a.n.localeCompare(b.n)
+  };
+  return list.sort(by[how] || by.new);
+}
+
+function viewProducts(){
+  let list = D.sealed.filter(p => {
+    const s = setById.get(p.g) || {};
+    if (state.types.size && !state.types.has(p.t)) return false;
+    if (state.year && !(s.d||"").startsWith(state.year)) return false;
+    return matchQ(p.n + " " + (s.n||""));
+  });
+  sortProducts(list, state.sort);
+  const typeCounts = {}; for (const p of D.sealed) typeCounts[p.t] = (typeCounts[p.t]||0)+1;
+  app.innerHTML = `
+    <div class="filters">
+      <div class="chips">${TYPES.filter(t=>typeCounts[t]).map(t=>`<span class="chip ${state.types.has(t)?'on':''}" onclick="toggleType('${t}')">${t}</span>`).join("")}</div>
+    </div>
+    <div class="filters">
+      <select onchange="state.year=this.value;state.shown=96;render()"><option value="">All years</option>${years.map(y=>`<option ${state.year===y?'selected':''}>${y}</option>`).join("")}</select>
+      <select onchange="state.sort=this.value;state.shown=96;render()">
+        ${[["new","Newest sets first"],["old","Oldest sets first"],["high","Value: high to low"],["low","Value: low to high"],["gain","Biggest gain vs MSRP"],["name","Name A to Z"]].map(([v,l])=>`<option value="${v}" ${state.sort===v?'selected':''}>${l}</option>`).join("")}
+      </select>
+      <span class="count">${list.length.toLocaleString()} products</span>
+    </div>
+    ${list.length ? `<div class="grid">${list.slice(0,state.shown).map(p=>productCard(p)).join("")}</div>` : `<div class="empty">No products match.</div>`}
+    ${list.length > state.shown ? `<button class="more" onclick="state.shown+=96;render()">Show more (${(list.length-state.shown).toLocaleString()} left)</button>` : ""}`;
+}
+function toggleType(t){ state.types.has(t)?state.types.delete(t):state.types.add(t); state.shown=96; render(); }
+
+function coverFor(s){
+  const order = ["Booster Pack","Elite Trainer Box","Booster Box","Booster Bundle"];
+  const ps = (sealedBySet.get(s.id)||[]).filter(p=>p.img);
+  for (const t of order){ const f = ps.find(p=>p.t===t); if (f) return f.img; }
+  if (ps[0]) return ps[0].img;
+  const hs = (hitsBySet.get(s.id)||[]).filter(c=>c.img).sort((a,b)=>(b.mp??0)-(a.mp??0));
+  return hs[0] ? hs[0].img : "";
+}
+function viewSets(){
+  let list = D.sets.filter(s => (state.year ? s.d.startsWith(state.year) : true) && matchQ(s.n + " " + s.a));
+  const by = { new:(a,b)=>b.d.localeCompare(a.d), old:(a,b)=>a.d.localeCompare(b.d), top:(a,b)=>(b.top??0)-(a.top??0), name:(a,b)=>a.n.localeCompare(b.n) };
+  list.sort(by[state.setSort]);
+  app.innerHTML = `
+    <div class="filters">
+      <select onchange="state.year=this.value;render()"><option value="">All years</option>${years.map(y=>`<option ${state.year===y?'selected':''}>${y}</option>`).join("")}</select>
+      <select onchange="state.setSort=this.value;render()">
+        ${[["new","Newest first"],["old","Oldest first"],["top","Most valuable top hit"],["name","Name A to Z"]].map(([v,l])=>`<option value="${v}" ${state.setSort===v?'selected':''}>${l}</option>`).join("")}
+      </select>
+      <span class="count">${list.length} sets</span>
+    </div>
+    <div class="grid">${list.map(s=>`
+      <div class="card setcard" style="cursor:pointer" onclick="go('set-${s.id}')">
+        ${img(coverFor(s))}
+        <div class="body">
+          <div class="name">${esc(s.n)}</div>
+          <div class="meta">${esc(s.d)}${s.a?' · '+esc(s.a):''}</div>
+          <div class="prices">
+            <div><div class="pl">Hit cards</div><div class="pv">${s.nh}</div></div>
+            <div><div class="pl">Top hit</div><div class="pv big">${money(s.top)}</div></div>
+          </div>
+        </div></div>`).join("")}</div>`;
+}
+
+function viewSet(id){
+  const s = setById.get(id);
+  if (!s){ app.innerHTML = `<div class="empty">Set not found.</div>`; return; }
+  const sealed = sortProducts((sealedBySet.get(id)||[]).slice(), "high").filter(p=>matchQ(p.n));
+  let hits = (hitsBySet.get(id)||[]).slice().sort((a,b)=>(b.mp??-1)-(a.mp??-1));
+  const rarities = [...new Set(hits.map(c=>c.r).filter(Boolean))];
+  hits = hits.filter(c => (!state.rarity || c.r===state.rarity) && matchQ(c.n));
+  const total = hits.reduce((t,c)=>t+(c.mp||0),0);
+  app.innerHTML = `
+    <div class="sethead">
+      <button class="back" onclick="history.length>1?history.back():go('sets')">&larr; Back</button>
+      <div><h1>${esc(s.n)}</h1><div class="meta">Released ${esc(s.d)}${s.a?' · '+esc(s.a):''}</div></div>
+      <div class="stats">
+        <div class="stat"><div class="pl">Hit cards</div><div class="pv">${s.nh}</div></div>
+        <div class="stat"><div class="pl">Top hit</div><div class="pv big">${money(s.top)}</div></div>
+        <div class="stat"><div class="pl">Sealed products</div><div class="pv">${s.ns}</div></div>
+      </div>
+    </div>
+    <h2>Hit cards</h2>
+    <div class="filters">
+      <select onchange="state.rarity=this.value;render()"><option value="">All hit rarities</option>${rarities.map(r=>`<option ${state.rarity===r?'selected':''}>${esc(r)}</option>`).join("")}</select>
+      <span class="count">${hits.length} cards · combined value ${money(total)}</span>
+    </div>
+    ${hits.length ? `<div class="grid">${hits.map(hitCard).join("")}</div>` : `<div class="empty">No hit cards listed for this set.</div>`}
+    <h2>Sealed products</h2>
+    ${sealed.length ? `<div class="grid">${sealed.map(p=>productCard(p,false)).join("")}</div>` : `<div class="empty">No sealed products listed for this set.</div>`}`;
+}
+
+// ---------- routing ----------
+function route(){ return location.hash.replace(/^#/,""); }
+function go(r){ if (route()!==r){ state.rarity=""; location.hash = r; } else render(); }
+function render(){
+  const r = route();
+  document.getElementById('tab-products').classList.toggle('on', r==="");
+  document.getElementById('tab-sets').classList.toggle('on', r==="sets" || r.startsWith("set-"));
+  if (r.startsWith("set-")) viewSet(Number(r.slice(4)));
+  else if (r==="sets") viewSets();
+  else viewProducts();
+}
+window.addEventListener("hashchange", ()=>{ window.scrollTo(0,0); render(); });
+let qt; document.getElementById('q').addEventListener('input', e => {
+  clearTimeout(qt); qt = setTimeout(()=>{ state.q = e.target.value.trim().toLowerCase(); state.shown=96; render(); }, 180);
+});
+render();
+</script>
+</body>
+</html>
